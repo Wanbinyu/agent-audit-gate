@@ -1,0 +1,26 @@
+{
+  "schema_version": "1",
+  "run_id": "demo-readonly",
+  "claimed_status": "completed",
+  "task": {
+    "summary": "Explain how auth middleware works",
+    "requires_verification": false,
+    "risk": "low"
+  },
+  "tools": [
+    {
+      "name": "read_file",
+      "ok": true,
+      "category": "read",
+      "path": "src/auth/middleware.py"
+    },
+    {
+      "name": "grep",
+      "ok": true,
+      "category": "search",
+      "summary": "found 4 matches for AuthMiddleware"
+    }
+  ],
+  "files_changed": [],
+  "model_claims": ["explained middleware flow"]
+}

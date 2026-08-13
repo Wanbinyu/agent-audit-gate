@@ -1,0 +1,2 @@
+{"name": "edit_file", "ok": true, "path": "src/parser.py"}
+{"name": "run_command", "command": ["python", "-m", "pytest", "tests/test_parser.py", "-q"], "exit_code": 1, "summary": "1 failed"}

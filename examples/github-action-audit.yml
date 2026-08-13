@@ -1,0 +1,25 @@
+# Copy into your repo as .github/workflows/audit-gate.yml
+# Commit a trajectory file (or generate it in CI) then fail the job when blocked.
+
+name: agent-audit-gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install agent-audit-gate
+        run: python -m pip install "agent-audit-gate @ git+https://github.com/YOUR_USER/agent-audit-gate.git"
+
+      - name: Audit trajectory
+        # Exit 3 (blocked) fails the job; use continue-on-error only for soft gates.
+        run: audit-gate check path/to/run.trajectory.json --pretty

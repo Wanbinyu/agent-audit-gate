@@ -1,0 +1,35 @@
+{
+  "schema_version": "1",
+  "run_id": "demo-completed",
+  "claimed_status": "completed",
+  "task": {
+    "summary": "Fix off-by-one in parser and run unit tests",
+    "requires_verification": true,
+    "risk": "standard"
+  },
+  "tools": [
+    {
+      "name": "read_file",
+      "ok": true,
+      "category": "read",
+      "path": "src/parser.py"
+    },
+    {
+      "name": "edit_file",
+      "ok": true,
+      "category": "write",
+      "path": "src/parser.py"
+    },
+    {
+      "name": "run_command",
+      "ok": true,
+      "category": "command",
+      "command": ["python", "-m", "pytest", "tests/test_parser.py", "-q"],
+      "exit_code": 0,
+      "verification": true,
+      "summary": "3 passed"
+    }
+  ],
+  "files_changed": ["src/parser.py"],
+  "model_claims": ["tests passed"]
+}
