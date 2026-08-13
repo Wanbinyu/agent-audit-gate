@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-audit-gate"
-version = "0.3.1"
+version = "0.3.2"
 description = "Sidecar completion audit for coding agents: evidence decides completed vs blocked."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -49,6 +49,9 @@ Repository = "https://github.com/Wanbinyu/agent-audit-gate"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"agent_audit_gate" = ["data/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

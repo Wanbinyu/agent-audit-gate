@@ -3,37 +3,33 @@
 ## Install
 
 ```bash
-python -m pip install -e .
-# or: pipx install /path/to/agent-audit-gate
+pipx install git+https://github.com/Wanbinyu/agent-audit-gate.git@v0.3.2
 audit-gate --version
 ```
 
-## Three workflows
-
-### 1. Edit a template
+## Use
 
 ```bash
+audit-gate demo
 audit-gate init run.trajectory.json
-# fill real tools / commands / exit codes
+# edit tools / commands / exit codes
 audit-gate check run.trajectory.json --pretty
 ```
 
-### 2. Tool-event JSONL
+Tool-event JSONL:
 
 ```bash
 audit-gate from-events tools.jsonl --claimed completed --pretty
 ```
 
-### 3. CI / scripts
+CI / scripts:
 
 ```bash
 audit-gate check run.trajectory.json --quiet
 # exit 3 => blocked
 ```
 
-### 4. Replay a Claude Code session
-
-Install [`cc-usage-gate`](../../cc-usage-gate), use Claude Code as usual, then:
+Optional: if `.claude/usage-gate/*.events.jsonl` already exists:
 
 ```bash
 audit-gate from-session --pretty
@@ -44,7 +40,7 @@ audit-gate from-session --pretty
 | status | exit | meaning |
 |--------|------|---------|
 | completed | 0 | enough evidence |
-| partial | 2 | writes without a green test, and not claimed completed |
+| partial | 2 | required verification missing, not claimed completed |
 | blocked | 3 | missing/failed evidence or false completion claim |
 
 Model prose alone is never enough.

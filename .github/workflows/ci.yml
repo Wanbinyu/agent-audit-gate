@@ -32,6 +32,7 @@ jobs:
         shell: bash
         run: |
           audit-gate --version
+          audit-gate demo
           audit-gate check examples/run_completed.json --quiet
           audit-gate check examples/run_partial.json --quiet || test $? -eq 2
           audit-gate from-events examples/tool_events_ok.jsonl --claimed completed --quiet

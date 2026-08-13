@@ -14,9 +14,18 @@ from .adapters import adapt_events_file, trajectory_template
 from .audit import audit_run
 from .io_util import load_run
 from .models import AuditReport, RunTrajectory
+from .packaged import packaged_example, packaged_example_names
 from .rules_doc import rules_as_text
 from .session_import import resolve_usage_gate_events
 from .version import __version__
+
+_DEMO_EXPECTED = {
+    "run_completed.json": "completed",
+    "run_readonly_ok.json": "completed",
+    "run_partial.json": "partial",
+    "run_blocked_no_test.json": "blocked",
+    "run_blocked_failed_test.json": "blocked",
+}
 
 app = typer.Typer(
     name="audit-gate",
@@ -48,6 +57,31 @@ def main(
     if ctx.invoked_subcommand is None:
         typer.echo(ctx.get_help())
         raise typer.Exit(0)
+
+
+@app.command("demo")
+def demo() -> None:
+    """Run packaged examples (works after pipx, no checkout needed)."""
+    failed = 0
+    for name in packaged_example_names():
+        expected = _DEMO_EXPECTED[name]
+        with packaged_example(name) as path:
+            report = audit_run(load_run(path))
+        mark = "ok" if report.status == expected else "FAIL"
+        if report.status != expected:
+            failed += 1
+        color = {"completed": "green", "partial": "yellow", "blocked": "red"}[
+            report.status
+        ]
+        console.print(
+            f"[{color}]{report.status:9}[/{color}]  {name}  "
+            f"exit={report.exit_code()}  {mark}"
+        )
+    if failed:
+        err_console.print(f"[red]demo:[/red] {failed} example(s) mismatched")
+        raise typer.Exit(1)
+    console.print("[dim]next: audit-gate init run.trajectory.json[/dim]")
+    raise typer.Exit(0)
 
 
 @app.command("check")

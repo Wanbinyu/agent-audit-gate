@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.2 — 2026-08-13
+
+- `audit-gate demo` runs packaged examples (works after pipx, no clone).
+- Install docs use the public GitHub URL and tag; local `G:\skill` paths removed.
+
 ## 0.3.1 — 2026-08-13
 
 - `requires_verification=true` on a read-only run now requires a green test

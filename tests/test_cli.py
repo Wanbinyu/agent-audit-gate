@@ -12,6 +12,13 @@ EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
 runner = CliRunner()
 
 
+def test_demo() -> None:
+    result = runner.invoke(app, ["demo"])
+    assert result.exit_code == 0
+    assert "run_completed.json" in result.stdout
+    assert "ok" in result.stdout
+
+
 def test_version() -> None:
     result = runner.invoke(app, ["--version"])
     assert result.exit_code == 0

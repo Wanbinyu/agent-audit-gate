@@ -1,0 +1,20 @@
+{
+  "schema_version": "1",
+  "run_id": "demo-partial",
+  "claimed_status": "unknown",
+  "task": {
+    "summary": "Started parser fix; tests not run yet",
+    "requires_verification": true,
+    "risk": "standard"
+  },
+  "tools": [
+    {
+      "name": "edit_file",
+      "ok": true,
+      "category": "write",
+      "path": "src/parser.py"
+    }
+  ],
+  "files_changed": ["src/parser.py"],
+  "model_claims": []
+}

@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/Wanbinyu/agent-audit-gate/actions/workflows/ci.yml/badge.svg)](https://github.com/Wanbinyu/agent-audit-gate/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB)
-![Status](https://img.shields.io/badge/status-v0.3.1-blue)
+![Status](https://img.shields.io/badge/status-v0.3.2-blue)
 
 **Sidecar completion audit for coding agents.**  
 Evidence decides `completed` vs `blocked`. Model claims never upgrade a run alone.
@@ -36,52 +36,41 @@ Orthogonal to **Claude Code Router** / **CC Switch** (they manage *where* reques
 
 ## Install
 
-Requires **Python 3.11+**.
-
-### From this folder (development)
+Requires **Python 3.11+** and [pipx](https://pipx.pypa.io/).
 
 ```bash
-cd agent-audit-gate
-python -m pip install -e ".[test]"
+pipx install git+https://github.com/Wanbinyu/agent-audit-gate.git@v0.3.2
 audit-gate --version
 ```
 
-### With pipx (recommended for daily use)
+From a clone (development):
 
 ```bash
-# After you publish the GitHub repo:
-pipx install git+https://github.com/Wanbinyu/agent-audit-gate.git
-
-# Or install from a local checkout:
-pipx install G:\skill\agent-audit-gate
+git clone https://github.com/Wanbinyu/agent-audit-gate.git
+cd agent-audit-gate
+python -m pip install -e ".[test]"
 ```
 
 Upgrade / uninstall:
 
 ```bash
-pipx upgrade agent-audit-gate
+pipx upgrade --pip-args='--force-reinstall' agent-audit-gate
 pipx uninstall agent-audit-gate
 ```
 
 ---
 
-## 60-second demo
+## Use (after install, no clone needed)
 
 ```bash
-# 1) Starter file you can edit
+audit-gate demo
 audit-gate init run.trajectory.json
-
-# 2) Check examples shipped with the package (from repo root)
-audit-gate check examples/run_completed.json --pretty
-audit-gate check examples/run_blocked_no_test.json --pretty
-
-# 3) From tool-event logs (JSONL) — common path for “export then audit”
-audit-gate from-events examples/tool_events_ok.jsonl --claimed completed --pretty
-audit-gate from-events examples/tool_events_blocked.jsonl --claimed completed --pretty
-
-# 4) Replay a Claude Code usage-gate session (after cc-usage-gate is installed)
-audit-gate from-session --pretty
+audit-gate check run.trajectory.json --pretty
 ```
+
+`demo` runs packaged examples (write+tests → completed, no tests → blocked, etc.).
+
+Then edit `run.trajectory.json` to match a real run and check again.
 
 ### Exit codes
 
@@ -93,8 +82,8 @@ audit-gate from-session --pretty
 | `1` | bad input / usage |
 
 ```bash
-audit-gate check examples/run_blocked_no_test.json --quiet
-echo $?   # 3 on Unix
+audit-gate check run.trajectory.json --quiet
+echo $?   # 3 on Unix when blocked
 # PowerShell: echo $LASTEXITCODE
 ```
 
@@ -134,20 +123,19 @@ audit-gate from-events tools.jsonl \
   --pretty
 ```
 
-**Claude Code:** install [`cc-usage-gate`](../cc-usage-gate) so hooks write
-`.claude/usage-gate/<session>.events.jsonl`, then:
+If you already have `.claude/usage-gate/<session>.events.jsonl` (from a
+Claude Code usage-gate hook):
 
 ```bash
 audit-gate from-session --pretty
 audit-gate from-session <session-id> --dir .claude/usage-gate --quiet
 ```
 
-`--claimed` defaults to `completed` (same as the plugin Stop hook). Use
-`--claimed unknown` if the run is still in progress and you want `partial`
-instead of `blocked`.
+`--claimed` defaults to `completed`. Use `--claimed unknown` for in-progress
+runs if you want `partial` instead of `blocked`.
 
-Hand-authored trajectories and harness JSONL still work. Adapters stay thin;
-core rules stay on schema v1.
+This CLI does not require that plugin. Hand-authored trajectories and harness
+JSONL always work.
 
 ---
 
@@ -217,14 +205,13 @@ agent-audit-gate/
 └── pyproject.toml
 ```
 
-In-IDE sibling: **cc-usage-gate** (Claude Code plugin) — same `audit_core` rules.
-Optional sibling: **agent-cost-ledger** for token/cost accounting.
+Optional sibling: **[agent-cost-ledger](https://github.com/Wanbinyu/agent-cost-ledger)** for token/cost accounting.
 
 ---
 
 ## Version
 
-**0.3.1** — `requires_verification` honored on read-only runs; CI covers `from-session`.
+**0.3.2** — `audit-gate demo` works after pipx (packaged examples).
 
 ## License
 
