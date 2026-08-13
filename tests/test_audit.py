@@ -6,7 +6,7 @@ import pytest
 from pydantic import ValidationError
 
 from agent_audit_gate import audit_run, load_run
-from agent_audit_gate.models import RunTrajectory
+from agent_audit_gate.models import RunTrajectory, TaskMeta, ToolEvent
 
 EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
 
@@ -50,6 +50,25 @@ def test_writes_without_claim_are_partial() -> None:
     assert report.exit_code() == 2
     assert any(f.code == "write_without_verification" for f in report.findings)
     assert "agent_claimed_completed_without_evidence" not in report.risks
+
+
+def test_readonly_requires_verification() -> None:
+    run = RunTrajectory(
+        schema_version="1",
+        run_id="ro-verify",
+        claimed_status="completed",
+        task=TaskMeta(requires_verification=True),
+        tools=[
+            ToolEvent(name="read_file", ok=True, category="read", path="a.py"),
+        ],
+    )
+    report = audit_run(run)
+    assert report.status == "blocked"
+    assert any(f.code == "verification_required" for f in report.findings)
+
+    run = run.model_copy(update={"claimed_status": "unknown"})
+    report = audit_run(run)
+    assert report.status == "partial"
 
 
 def test_unsupported_schema() -> None:

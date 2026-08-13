@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/Wanbinyu/agent-audit-gate/actions/workflows/ci.yml/badge.svg)](https://github.com/Wanbinyu/agent-audit-gate/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB)
-![Status](https://img.shields.io/badge/status-v0.3.0-blue)
+![Status](https://img.shields.io/badge/status-v0.3.1-blue)
 
 **Sidecar completion audit for coding agents.**  
 Evidence decides `completed` vs `blocked`. Model claims never upgrade a run alone.
@@ -163,8 +163,8 @@ audit-gate rules
 2. **Writes need verification** — write activity + verification required ⇒ need a green verification tool.
 3. **Failed verification vetoes** — any failed verification ⇒ `blocked`.
 4. **Claim conflict** — `claimed_status=completed` without evidence ⇒ `blocked` + risk flag.
-5. **Read-only path** — successful read/search without writes can complete when verification is not required.
-6. **Partial progress** — writes without a green test, and not claimed completed ⇒ `partial` (exit 2).
+5. **Read-only path** — successful read/search without writes can complete when verification is not required. If `requires_verification=true`, a green test is still required.
+6. **Partial progress** — required verification missing, and not claimed completed ⇒ `partial` (exit 2).
 
 ---
 
@@ -224,7 +224,7 @@ Optional sibling: **agent-cost-ledger** for token/cost accounting.
 
 ## Version
 
-**0.3.0** — shared tagging with the plugin, real `partial`, `from-session` replay.
+**0.3.1** — `requires_verification` honored on read-only runs; CI covers `from-session`.
 
 ## License
 

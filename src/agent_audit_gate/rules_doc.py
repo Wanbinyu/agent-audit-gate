@@ -37,8 +37,8 @@ RULES: list[dict[str, str]] = [
         "id": "R6",
         "name": "partial_progress",
         "summary": (
-            "Writes without a green verification command are partial when "
-            "claimed_status is not completed. Claiming completed stays blocked."
+            "Required verification missing, and claimed_status is not "
+            "completed → partial. Claiming completed stays blocked."
         ),
     },
 ]

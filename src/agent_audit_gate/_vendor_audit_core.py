@@ -178,22 +178,26 @@ def audit_events(
         missing.append("green_verification_command")
         risks.append("verification_command_failed")
 
-    # R2: writes need green verification.
-    # Claiming completed without a green test is a hard block.
-    # Progress without that claim is partial (not a fake "done").
-    write_without_verify = (
-        needs_verify
-        and has_write
-        and summary["verification_ok"] == 0
-    )
-    if write_without_verify:
+    # R2: verification required but no green test.
+    # Claiming completed is a hard block; otherwise this is partial progress.
+    missing_verify = needs_verify and summary["verification_ok"] == 0
+    if missing_verify:
         findings.append(
             {
-                "code": "write_without_verification",
+                "code": (
+                    "write_without_verification"
+                    if has_write
+                    else "verification_required"
+                ),
                 "severity": "error" if claimed_status == "completed" else "warn",
                 "message": (
                     "Write activity observed but no successful verification "
                     "command (verification=true, ok, exit_code 0)."
+                    if has_write
+                    else (
+                        "Verification is required but no successful "
+                        "verification command was recorded."
+                    )
                 ),
             }
         )
@@ -234,21 +238,29 @@ def audit_events(
     if hard_block:
         status = "blocked"
         message = "Blocked: missing or failed evidence; model claims cannot override."
-    elif has_write and summary["verification_ok"] > 0:
+    elif needs_verify and summary["verification_ok"] > 0:
         status = "completed"
-        message = "Completed: writes backed by green verification evidence."
-    elif not has_write and successful:
+        message = (
+            "Completed: writes backed by green verification evidence."
+            if has_write
+            else "Completed: required verification succeeded."
+        )
+    elif not needs_verify and successful:
         status = "completed"
-        message = "Completed: non-write task with successful tool evidence."
-    elif write_without_verify and successful:
+        message = (
+            "Completed: non-write task with successful tool evidence."
+            if not has_write
+            else "Completed: tools succeeded and verification was not required."
+        )
+    elif missing_verify and successful:
         status = "partial"
         message = (
-            "Partial: writes observed without green verification "
+            "Partial: required verification is missing "
             "(not claimed completed)."
         )
     elif successful:
         status = "completed"
-        message = "Completed: tools succeeded and verification was not required."
+        message = "Completed: tools succeeded."
     else:
         status = "blocked"
         message = "Blocked: insufficient evidence."

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1 — 2026-08-13
+
+- `requires_verification=true` on a read-only run now requires a green test
+  (claimed completed → blocked; otherwise partial).
+- CI smokes `run_partial` and `from-session`.
+- Example GitHub Action installs from `Wanbinyu/agent-audit-gate`.
+
 ## 0.3.0 — 2026-08-13
 
 - **Shared tagging** with `cc-usage-gate`: `from-events` uses the same

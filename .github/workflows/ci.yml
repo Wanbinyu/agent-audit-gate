@@ -33,4 +33,8 @@ jobs:
         run: |
           audit-gate --version
           audit-gate check examples/run_completed.json --quiet
+          audit-gate check examples/run_partial.json --quiet || test $? -eq 2
           audit-gate from-events examples/tool_events_ok.jsonl --claimed completed --quiet
+          mkdir -p /tmp/usage-gate
+          cp examples/tool_events_ok.jsonl /tmp/usage-gate/demo.events.jsonl
+          audit-gate from-session demo --dir /tmp/usage-gate --quiet
